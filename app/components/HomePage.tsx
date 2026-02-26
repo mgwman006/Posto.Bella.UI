@@ -1,4 +1,4 @@
-import { Col, Flex, Progress, Row, Steps, Typography, Image, Button, Carousel, Select, DatePicker, notification, Card } from "antd";
+import { Col, Flex, Progress, Row, Steps, Typography, Image, Button, Carousel, Select, DatePicker, notification, Card, Modal } from "antd";
 import { EditOutlined, EnvironmentOutlined, FileAddOutlined, HeatMapOutlined, LoadingOutlined, NodeExpandOutlined, RightOutlined } from "@ant-design/icons";
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
@@ -9,11 +9,8 @@ import Meta from "antd/es/card/Meta";
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 export default function HomePage(){
-    const naigate = useNavigate();
-    const [destinations, setDestinations] = useState<string[]>([]);
-    const [tours, setTours] = useState<PrivateTourListItemDto[]>([]);
-    const [notificationApi, notificationContextHolder] = notification.useNotification();
-    const [filteredTours, setFilteredTours] = useState<PrivateTourListItemDto[]>([]);
+    const [openModel2,setOpenModel2] = useState<boolean>(false);
+    const [openModel3,setOpenModel3] = useState<boolean>(false);
 
 
     function CarouselImage(url:string)
@@ -349,21 +346,95 @@ export default function HomePage(){
             </Row>
           
             
-            <Flex vertical style={{background:"white"}}>
-                <h1 style={{textAlign:"center"}}>Our Partners</h1>
+            <Flex vertical style={{background:"FCF0F0"}}>
+
+                <Typography.Title style={{textAlign:"center"}}>Our Partners</Typography.Title>
                 <Row 
                 justify="space-around" 
                 align="middle"
                 gutter={[0, 10]}
               >
 
+            
+                <Modal
+                  centered
+                  open={openModel2}
+                  width={1000}
+                  onCancel={() => setOpenModel2(false)}
+                  footer={null}
+                >
+                  <Image.PreviewGroup
+                    preview={{
+                      onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
+                    }}
+                  >
+                    <Image
+                      alt="svg image"
+                      width={200}
+                      src="partners/dainty/da1.png"
+                    />
+                    <Image
+                      alt="svg image"
+                      width={200}
+                      src="partners/dainty/da2.png"
+                    />
+                    <Image
+                      alt="svg image"
+                      width={200}
+                      src="partners/dainty/da3.png"
+                    />
+                  </Image.PreviewGroup>
+                </Modal>
+
+                <Modal
+                  title="Modal 1000px width"
+                  centered
+                  open={openModel3}
+                  width={1000}
+                  onCancel={() => setOpenModel3(false)}
+                  footer={null}
+                >
+                  <Image.PreviewGroup
+                    preview={{
+                      onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
+                    }}
+                  >
+                    <Image
+                      alt="svg image"
+                      width={200}
+                      src="partners/bellissimo/b1.png"
+                    />
+                    <Image
+                      width={200}
+                      alt="svg image"
+                      src="partners/bellissimo/b2.png"
+                    />
+                    <Image
+                      width={200}
+                      alt="svg image"
+                      src="partners/bellissimo/b3.png"
+                    />
+                  </Image.PreviewGroup>
+                </Modal>
+
                 <Col 
                   xs={20}
                   sm={20}
-                  md={10}
-                  lg={10}
-                  xl={10}
-                  xxl={10}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                  xxl={4}
+                >
+                  
+                </Col>
+
+                <Col 
+                  xs={20}
+                  sm={20}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                  xxl={4}
                 >
                 
                  <Card
@@ -374,12 +445,12 @@ export default function HomePage(){
                         flexDirection: "column",
                       }}
                       actions={[
-                        <Button>View Property</Button>
+                        <Button type="primary" onClick={() => setOpenModel2(true)}>View Property</Button>
                       ]}
                       cover={
                           <div 
                             style={{ 
-                                height: 400, 
+                                height: 250, 
                                 overflow: "hidden"
                             }}
                            >
@@ -400,20 +471,19 @@ export default function HomePage(){
                          title="Dainty Home Stay"
                          description="Scenic home in 14 Ngwila Rd in Bagamoyo near Epiphany Christian Centre Offering a Fantastic Stay!." 
                         />
-                    </Card>
+                 </Card>
                  
                 </Col>
 
                 <Col 
                   xs={20}
                   sm={20}
-                  md={10}
-                  lg={10}
-                  xl={10}
-                  xxl={10}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                  xxl={4}
                   
                 >
-                  
                   
                     <Card
                       hoverable
@@ -423,12 +493,12 @@ export default function HomePage(){
                         flexDirection: "column",
                       }}
                       actions={[
-                        <Button>View Property</Button>
+                        <Button type="primary" onClick={() => setOpenModel3(true)}>View Property</Button>
                       ]}
                       cover={
                           <div 
                             style={{ 
-                                height: 400, 
+                                height: 250, 
                                 overflow: "hidden"
                             }}
                            >
@@ -453,6 +523,17 @@ export default function HomePage(){
                   
                 </Col>
 
+                
+                <Col 
+                  xs={20}
+                  sm={20}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                  xxl={4}
+                >
+                  
+                </Col>
                 
             </Row>
             </Flex>
