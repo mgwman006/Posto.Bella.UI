@@ -13,25 +13,26 @@ const routes = [
       {
         path:"",
         Component: HomePage
-      },
-      {
-        path:"zanzibar",
-        Component: Zanzibarpage
-      },
-      {
-        path:"tours",
-        Component: ToursPage,
-        children:[
-          {
-            path:"",
-            Component: ToursList,
-          },
-          {
-            path:":tourId",
-            Component:TourDetails
-          }
-        ]
       }
+      // ,
+      // {
+      //   path:"zanzibar",
+      //   Component: Zanzibarpage
+      // },
+      // {
+      //   path:"tours",
+      //   Component: ToursPage,
+      //   children:[
+      //     {
+      //       path:"",
+      //       Component: ToursList,
+      //     },
+      //     {
+      //       path:":tourId",
+      //       Component:TourDetails
+      //     }
+      //   ]
+      // }
     ]
   }
  
