@@ -11,11 +11,12 @@ const items = [
   {
     key: '1',
     label: <Link to="/" >Home</Link>,
-  },
-  {
-    key: '4',
-    label: <Link to="zanzibar" >Zanzibar</Link>,
   }
+  // ,
+  // {
+  //   key: '4',
+  //   label: <Link to="zanzibar" >Partners</Link>,
+  // }
 
 ];
 
@@ -23,22 +24,8 @@ export default function Home() {
   const [showMenu, setShowMenu] = useState(false);
   const [destinations, setDestinations] = useState<string[]>([]);
 
-  useEffect(() => {
-    // Fetch destinations from the API or any other source
-    getDestinations().then(
-                (apiResponse) => {
-                   
-                    if(apiResponse.success)
-                    {
-                        setDestinations(apiResponse.data);}
-                    else
-                    {
-                        alert(`Error ${apiResponse.message}`);
-                    }
-                }
-            );  
-    
-  }, []);
+
+
   return (
     <Layout >
       {
@@ -77,8 +64,8 @@ export default function Home() {
                     </Drawer>
                 </div>
 
-                <div style={{  alignContent:'center'}}>
-                  <Image preview={false}  src="logo1.jpg" width='100%'/> 
+                <div style={{  alignContent:'right'}}>
+                  <Image preview={false}  src="logoMobile.png" width='50px' /> 
                 </div>
             
             </Flex>            
@@ -99,8 +86,14 @@ export default function Home() {
                 backgroundColor:'white'
               }}
             >
-              <div className="demo-logo">
-                <Image preview={false}  src="/logo1.jpg"/>
+              <div 
+                className="demo-logo"
+                >
+                <Image 
+                  height={40} 
+                  //style={{ objectFit: "contain" }}
+                  preview={false}  
+                  src="/logo.png"/>
               </div>
               <Menu
                 theme='light'
@@ -110,7 +103,6 @@ export default function Home() {
                 style={{ flex: 1, minWidth: 0 }}
               />
 
-              {/* <Button type='primary' size='large'>Plan A Trip</Button> */}
             
             </Header>
         )
@@ -134,12 +126,12 @@ export default function Home() {
           <Col xs={24} sm={8} lg={8} xl={8} xxl={8}>
                 <h2>Contact Us</h2>
                 <p style={{fontSize:"15px"}}>
-                  Samora Ave,<br />Dar es Salaam 50069,<br />Tanzania <br />
-                  letsexploretanzania@gmail.com <br />+255 692 650 730
+                  Plot 1957, Kilungule St, Bunju,<br />Dar es Salaam,<br />Tanzania <br />
+                  info@postobellaresort.com <br />+255 762 444 414
                   
                 </p>
                 <Flex vertical={false} gap={"middle"}>
-                  <a 
+                  {/* <a 
                     style={
                       {
                         color:"green",
@@ -149,7 +141,7 @@ export default function Home() {
                     target='_blank' href='https://youtube.com/@letsexploretanzania8611?si=TY2QV9D7xjbgWv3-'
                   >
                     <YoutubeOutlined />
-                  </a>
+                  </a> */}
                   <a 
                     style={
                       {
@@ -158,10 +150,10 @@ export default function Home() {
                       }
                     } 
                     target='_blank' 
-                    href='https://www.instagram.com/letsexploretanzania/'>
+                    href='https://www.instagram.com/posto_bella?igsh=cm02b2JmbWJucnB3'>
                     <InstagramOutlined />
                   </a>
-                  <a 
+                  {/* <a 
                     style={
                       {
                         color:"green",
@@ -171,8 +163,8 @@ export default function Home() {
                     target='_blank' 
                     href='https://www.facebook.com/letsexploretanzania'>
                     <LikeOutlined />
-                  </a>
-                  <a 
+                  </a> */}
+                  {/* <a 
                     style={
                       {
                         color:"green",
@@ -182,7 +174,7 @@ export default function Home() {
                     target='_blank' 
                     href='https://vm.tiktok.com/ZMrQXgCbL/'>
                       <TikTokOutlined />
-                  </a>
+                  </a> */}
                   <a 
                     style={
                       {
@@ -191,7 +183,7 @@ export default function Home() {
                       }
                     } 
                     target='_blank' 
-                    href='https://whatsapp.com/channel/0029VaUrhBpKQuJRklQiFe1v'
+                    href='https://wa.me/255762444414?text=Welcome+to+Posto+Bella+Resort,+how+can+we+be+of+service+today?'
                   >
                     <WhatsAppOutlined />
                   </a>
@@ -209,9 +201,14 @@ export default function Home() {
 
           
         </Row>
-        <Row style={{ textAlign: 'center', marginTop: '20px', backgroundColor:"black" }}>
+        {/* <Row style={{ textAlign: 'center', marginTop: '20px', backgroundColor:"black" }}>
             <Col span={24}>
               ©{new Date().getFullYear()} Built with love by <a href='https://www.tante.tz' target="_blank">tante.tz</a>
+            </Col>
+        </Row> */}
+        <Row style={{ textAlign: 'center', marginTop: '20px', backgroundColor:"black" }}>
+            <Col span={24}>
+              ©{new Date().getFullYear()} Built with love by tante
             </Col>
         </Row>
             
