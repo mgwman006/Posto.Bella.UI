@@ -1,4 +1,6 @@
 import { Dayjs } from "dayjs";
+import { Room } from "./enums";
+import { PaymentDetails } from "./payment";
 export  interface BookingCreateDto
 {
     tourId:number;
@@ -25,4 +27,34 @@ export  interface CreatedBookingDto
     tourDate:Dayjs;
     specialRequests:string,
     referenceNumber:string
+}
+
+
+
+/* ================= TYPES ================= */
+
+export interface ExtraServiceDTO {
+  name: string;
+  cost: number;
+  quantity: number
+}
+export interface RoomDTO {
+  roomType: string;
+  value: string;
+  cost: number;
+}
+
+export interface RoomBookingModel {
+  customerName: string;
+  email: string;
+  phone: string;
+  checkInDate:Dayjs;
+  checkOutDate:Dayjs;
+  expectedTimeOfArrival:String;
+  nights: number;
+  rooms: RoomDTO[];
+  extras: ExtraServiceDTO[];
+  paymentDetails: PaymentDetails;
+  remarks?: string;
+  receptionist:string
 }

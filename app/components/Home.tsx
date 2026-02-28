@@ -1,7 +1,7 @@
 import { Button, Col, Flex, Progress, Row,Image, Layout, Menu, Drawer, Typography, List } from 'antd';
 import { Content, Footer, Header } from 'antd/es/layout/layout';
 import { isMobile, isTablet, isBrowser } from 'react-device-detect';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LikeOutlined, MenuOutlined, MessageOutlined, ShoppingCartOutlined, StarOutlined, MailOutlined, VideoCameraAddOutlined, VideoCameraOutlined, YoutubeOutlined, InstagramOutlined, InsertRowAboveOutlined, TikTokOutlined, WhatsAppOutlined, PhoneOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { use, useEffect, useState } from 'react';
 import { getDestinations } from '../services/admin/privateTourService';
@@ -9,21 +9,24 @@ import { getDestinations } from '../services/admin/privateTourService';
 
 const items = [
   {
-    key: '1',
-    label: <Link to="/" >Home</Link>,
+    key: "/",
+    label: "Home",
   }
-  // ,
-  // {
-  //   key: '4',
-  //   label: <Link to="zanzibar" >Partners</Link>,
-  // }
+  ,
+  {
+    key: "/admin",
+    label: "Admin",
+  }
 
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [showMenu, setShowMenu] = useState(false);
-  const [destinations, setDestinations] = useState<string[]>([]);
+  const [menuSelectedTab,setMenuSelectedTab] = useState('1');
 
+  
 
 
   return (
@@ -56,16 +59,20 @@ export default function Home() {
                         <Menu
                           theme="light"
                           mode="vertical"
-                          defaultSelectedKeys={['1']}
+                          defaultSelectedKeys={[location.pathname]}
                           items={items}
                           style={{ flex: 1, minWidth: 0 }}
-                          onClick={() => setShowMenu(false)}
+                          // onClick={() => setShowMenu(false)}
+                          onClick={({ key }) => {
+                            navigate(key);       // 🔥 THIS is what was missing
+                            setShowMenu(false);
+                          }}
                         />
                     </Drawer>
                 </div>
 
                 <div style={{  alignContent:'right'}}>
-                  <Image preview={false}  src="logoMobile.png" width='50px' /> 
+                  <Image preview={false}  src="/logoMobile.png" width='50px' /> 
                 </div>
             
             </Flex>            
@@ -98,9 +105,13 @@ export default function Home() {
               <Menu
                 theme='light'
                 mode="horizontal"
-                defaultSelectedKeys={['1']}
+                defaultSelectedKeys={[location.pathname]}
                 items={items}
                 style={{ flex: 1, minWidth: 0 }}
+                 onClick={({ key }) => {
+                  navigate(key);       // 🔥 THIS is what was missing
+                  // setShowMenu(false);
+                }}
               />
 
             
