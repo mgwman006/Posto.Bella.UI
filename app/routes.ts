@@ -2,8 +2,8 @@ import ToursPage from "./components/ToursPage";
 import Home from "./components/Home";
 import HomePage from "./components/HomePage";
 import TourDetails from "./components/TourDetails";
-import ToursList from "./components/ToursList";
-import Zanzibarpage from "./components/Zanzibarpage";
+import Admin from "./components/admin/Admin";
+import RoomBooking from "./components/admin/roombooking/RoomBooking";
 
 const routes = [
   {
@@ -14,25 +14,25 @@ const routes = [
         path:"",
         Component: HomePage
       }
-      // ,
-      // {
-      //   path:"zanzibar",
-      //   Component: Zanzibarpage
-      // },
-      // {
-      //   path:"tours",
-      //   Component: ToursPage,
-      //   children:[
-      //     {
-      //       path:"",
-      //       Component: ToursList,
-      //     },
-      //     {
-      //       path:":tourId",
-      //       Component:TourDetails
-      //     }
-      //   ]
-      // }
+      ,
+      {
+        path:"admin",
+        Component: Admin
+      },
+      {
+        path:"booking",
+        Component: ToursPage,
+        children:[
+          {
+            path:"room",
+            Component: RoomBooking,
+          },
+          {
+            path:"restaurant",
+            Component:TourDetails
+          }
+        ]
+      }
     ]
   }
  
