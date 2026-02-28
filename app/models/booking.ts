@@ -40,7 +40,7 @@ export interface ExtraServiceDTO {
 }
 export interface RoomDTO {
   roomType: string;
-  value: string;
+  quantity: number;
   cost: number;
 }
 
@@ -48,8 +48,8 @@ export interface RoomBookingModel {
   customerName: string;
   email: string;
   phone: string;
-  checkInDate:Dayjs;
-  checkOutDate:Dayjs;
+  checkInDate:string;
+  checkOutDate:string;
   expectedTimeOfArrival:String;
   nights: number;
   rooms: RoomDTO[];

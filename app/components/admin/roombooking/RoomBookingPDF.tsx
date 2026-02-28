@@ -5,7 +5,8 @@ import {
   Page,
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+  Image
 } from "@react-pdf/renderer";
 import { RoomBookingModel } from "../../../models/booking";
 
@@ -47,7 +48,35 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 10,
     textAlign: "center"
-  }
+  },
+  logo: {
+    width: 120,
+    height: 40,
+    marginBottom: 20,
+    alignSelf: "center"  // centers the logo
+  },
+   tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+    paddingVertical: 6,
+    alignItems: "center"
+  },
+  tableCell: {
+    flex: 1, // each cell takes equal space
+    fontSize: 11
+  },
+  tableHeader: {
+    fontWeight: "bold",
+    backgroundColor: "#f0f0f0",
+    paddingVertical: 4
+  },
+  balance: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 4,
+    backgroundColor:"#E2F5C4"
+  },
 });
 
 /* ================= COMPONENT ================= */
@@ -59,6 +88,11 @@ interface BookingPDFProps {
 const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
   <Document>
     <Page size="A4" style={styles.page}>
+       {/* Logo */}
+        <Image
+            src="/logo.png"   // Can be a local path or URL
+            style={styles.logo}
+        />
       <Text style={styles.header}>BOOKING CONFIRMATION</Text>
 
       {/* Customer Details */}
@@ -83,11 +117,11 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
         <Text style={styles.sectionTitle}>Booking Dates</Text>
         <View style={styles.row}>
           <Text style={styles.label}>Check-in:</Text>
-          <Text>{JSON.stringify(booking.checkInDate)}</Text>
+          <Text>{booking.checkInDate}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Check-out:</Text>
-          <Text>{JSON.stringify(booking.checkOutDate)}</Text>
+          <Text>{booking.checkOutDate}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Total Nights:</Text>
@@ -99,12 +133,23 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Rooms</Text>
         {booking.rooms.length > 0 ? (
-          booking.rooms.map((room, index) => (
-            <View style={styles.row} key={index}>
-              <Text>{room.roomType}</Text>
-              <Text>Tsh: {room.cost}</Text>
+          <>
+            {/* Table Header */}
+            <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Room Type</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Quantity</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Cost (Tsh)</Text>
             </View>
-          ))
+
+            {/* Table Rows */}
+            {booking.rooms.map((room, index) => (
+                <View style={styles.tableRow} key={index}>
+                <Text style={styles.tableCell}>{room.roomType}</Text>
+                <Text style={styles.tableCell}>{room.quantity}</Text>
+                <Text style={styles.tableCell}>{room.cost}</Text>
+                </View>
+            ))}
+         </>
         ) : (
           <Text>No Room selected</Text>
         )}
@@ -138,8 +183,8 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
           <Text>Tsh: {booking.paymentDetails.amountPaid}</Text>
         </View>
 
-        <View style={styles.row}>
-          <Text style={styles.label}>Balance:</Text>
+        <View style={styles.balance}>
+          <Text style={styles.label}>Balance Due:</Text>
           <Text>Tsh: {booking.paymentDetails.balance}</Text>
         </View>
 
