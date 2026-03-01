@@ -34,7 +34,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     marginBottom: 8,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    color:"blue"
   },
   row: {
     flexDirection: "row",
@@ -76,6 +77,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 4,
     backgroundColor:"#E2F5C4"
+  },
+  termsSubtitle: {
+    fontSize: 11,
+    fontWeight: "bold",
+    marginTop: 8,
+    marginBottom: 4
+  },
+  termsText: {
+    fontSize: 10,
+    marginBottom: 3,
+    lineHeight: 1.4
+  },
+  terms: {
+    marginBottom: 18,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    backgroundColor:"#FFF6E8",
+    borderRadius:10,
+    padding:10
   },
 });
 
@@ -132,7 +152,7 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
       {/* Room Details */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Rooms</Text>
-        {booking.rooms.length > 0 ? (
+        {booking.rooms && booking.rooms.length > 0 ? (
           <>
             {/* Table Header */}
             <View style={styles.tableRow}>
@@ -158,7 +178,7 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
       {/* Extra Services */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Extra Services</Text>
-        {booking.extras.length > 0 ? (
+        {booking.extras && booking.extras.length > 0 ? (
           <>
             {/* Table Header */}
             <View style={styles.tableRow}>
@@ -208,7 +228,15 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
       {/* Remarks */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Remarks</Text>
-        <Text>{booking.remarks ?? "No remarks provided."}</Text>
+        { booking.remarks && booking?.remarks?.length > 0 ? (
+                <Text>{booking.remarks}</Text>
+
+            ):
+            (
+                <Text>No remarks provided</Text>
+            )
+        }
+        
       </View>
 
       {/* Receptionist */}
@@ -216,6 +244,77 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
         <Text style={styles.sectionTitle}>Receptionist</Text>
         <Text>{booking.receptionist ?? "No data provided."}</Text>
       </View>
+
+
+      {/* Terms & Conditions */}
+      <View style={styles.terms} break>
+        <Text style={styles.sectionTitle}>Terms & Conditions</Text>
+
+        {/* Check-in & Check-out */}
+        <Text style={styles.termsSubtitle}>1. Booking Terms & Conditions:</Text>
+        <Text style={styles.termsText}>
+            • Our normal check in time is 1400hrs. Early check in can be granted on advance request depending on availability.
+        </Text>
+        <Text style={styles.termsText}>
+            • Please present your valid ID during registration (National ID, Passport or Driving License).
+        </Text>
+        <Text style={styles.termsText}>
+            • Check Out time is 1000hrs.
+        </Text>
+
+        <Text style={styles.termsText}>
+            • Full payment is required on arrival before access to the room is granted.
+        </Text>
+        <Text style={styles.termsText}>
+            • For access to the swimming pool please request a hand wrist band at the counter.
+        </Text>
+        <Text style={styles.termsText}>
+            • Breakfast is served from 0800hrs - 1000hrs at the gazebo by the pool.
+        </Text>
+
+        {/* BAR & KITCHEN BILLS: */}
+        <Text style={styles.termsSubtitle}>2. Bar & Kitchen Bills:</Text>
+        <Text style={styles.termsText}>
+            • Kindly note: All bar and kitchen bills are settled on same day the service is provided. We do not accumulate bills for the room guests..
+        </Text>
+
+        {/* ROOM SERVICE */}
+        <Text style={styles.termsSubtitle}>3. Room Service:</Text>
+        <Text style={styles.termsText}>
+            • All meals and drinks will be served at our garden located at the lodge. Room service is available at an extra charge.
+        </Text>
+
+        {/* ROOM COMMUNICATION */}
+        <Text style={styles.termsSubtitle}>4. Room Communication:</Text>
+        <Text style={styles.termsText}>
+            • For communication while you are in the room kindly use +255 769 456 782 to contact RECEPTION.
+        </Text>
+
+        {/* AMENITIES */}
+        <Text style={styles.termsSubtitle}>5. Amenities:</Text>
+        <Text style={styles.termsText}>
+            • While we provide other amenities in the room like bath soaps, shower gel, shampoo, lotions, toilet paper, tissues and a bottle of water, WE DO NOT PROVIDE Toothbrush and toothpastes so kindly remember to pack your own.
+        </Text>
+
+        {/* Care of Property & Linen Policy */}
+        <Text style={styles.termsSubtitle}>6. *Care of Property & Linen Policy*:</Text>
+        <Text style={styles.termsText}>
+            • Our rooms and linen are maintained to a high standard for the comfort of all guests. Guests are kindly requested to treat the room, furnishings, and linen with care. In the event of damage, misuse, or excessive soiling (abnormal dirting) of linen, towels, furnishings, or room property beyond normal wear and tear, the lodge reserves the right to charge the guest for professional cleaning, repair, or replacement costs.
+        </Text>
+
+        {/* CANCELLATION POLICY */}
+        <Text style={styles.termsSubtitle}>7. Cancellation Policy:</Text>
+        <Text style={styles.termsText}>
+            • Booking once paid up cannot be refunded. However, the booking can be postponed to a later date if a cancellation notice is received 5-days prior to arrival date. Notice received less than 5 days can neither be refunded nor be granted a later date.
+        </Text>
+
+        {/* Agreement */}
+        <Text style={{ fontSize: 10, marginTop: 8 }}>
+            By confirming this booking, you agree to the above terms and conditions.
+        </Text>
+      </View>
+
+
 
       <Text style={styles.footer}>
         Thank you for choosing us. We look forward to hosting you!
