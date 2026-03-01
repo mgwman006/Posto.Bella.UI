@@ -1,10 +1,10 @@
-import { Button, Col, Form, Input, Row, Select, Space, DatePicker, GetProps, DatePickerProps, InputNumber, Radio, Card, Flex, Result, Typography } from "antd";
+import { Button, Col, Form, Input, Row, Select, Space, DatePicker, GetProps, DatePickerProps, InputNumber, Radio, Card, Flex, Result, Typography, Modal } from "antd";
 import { RoomBookingModel } from "../../../models/booking";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { BackwardOutlined, CloseOutlined, DownloadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from "dayjs";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { pdf, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import BookingPDF from "./RoomBookingPDF";
 
 type RangePickerProps = GetProps<typeof DatePicker.RangePicker>;
@@ -44,7 +44,8 @@ const extrasData : ExtrasOption[]= [
 
 export default function RoomBooking()
 {
-    const [bookingData, setBookingData] = useState<RoomBookingModel|null>(null);
+    const [loading,setLoading] = useState<boolean>(false);
+    const [bookingData, setBookingData] = useState<RoomBookingModel>();
     const [checkInDateValue,setCheckInDateValue] = useState<dayjs.Dayjs>();
     const [checkOutDateValue,setCheckOutDateValue] = useState<dayjs.Dayjs>();
     const [roomsValue,setRoomsValue] = useState<RoomOption[]>();
@@ -84,8 +85,8 @@ export default function RoomBooking()
 
 
     const disabledCheckInDate: RangePickerProps['disabledDate'] = (current) => {
-        // Can not select days before today and today
-        return current && current < dayjs().endOf('day');
+        // Can not select days before today
+        return current && current < dayjs().startOf('day');
     };
 
     const disabledCheckOutDate = (current: dayjs.Dayjs) => {
@@ -174,8 +175,8 @@ export default function RoomBooking()
     };
 
 
-    const onFinish = (values: any) => {
-
+    const onFinish = async (values: any) => {
+        setLoading(true);
         let inDate: Dayjs = form.getFieldValue("checkInDate");
         let outDate: Dayjs = form.getFieldValue("checkOutDate");
         const readableCheckIn = inDate.format("MMMM D, YYYY h:mm A"); // February 28, 2026 3:30 PM
@@ -203,6 +204,20 @@ export default function RoomBooking()
         };
 
         setBookingData(booking);
+
+       // import { pdf } from "@react-pdf/renderer";
+        if(booking)
+        {
+            setLoading(false);
+            const blob = await pdf(<BookingPDF booking={booking} />).toBlob();
+            const url = URL.createObjectURL(blob);
+            window.open(url);
+        }
+        else
+        {
+            return;
+        }
+        
   };
 
     return(
@@ -240,15 +255,14 @@ export default function RoomBooking()
                     xxl={8}
                     style={{display: 'flex', justifyContent: 'center'}}
                 >
-                    {!bookingData && (
-                            <Form
+                    <Form
                                 size="large"
                                 layout="vertical"
                                 form={form}
                                 initialValues={{ remember: true }}
                                 onFinish={onFinish}
-                                autoComplete="off"
-                                style={{ backgroundColor:"#FCFCFC",width: '100%', padding:"10px"}}
+                                autoComplete="on"
+                                style={{ backgroundColor:"#FCFCFC",width: '100%', padding:"10px",borderRadius:"10px"}}
                             >
                                 <Form.Item name="guestName" label="Guest/Company Name" rules={[{ required: true }]}>
                                     <Input style={{ width: 'fillparent' }}/>
@@ -535,36 +549,7 @@ export default function RoomBooking()
                                         Submit
                                     </Button>
                                 </Form.Item>
-                            </Form>
-                    )
-                    }
-                    
-                    {bookingData && (
-                        <Result
-                            status="success"
-                            title="Record Successfully Submitted"
-                            subTitle={`Booking details for custome ${bookingData.customerName} has submitted`}
-                            extra={[
-                            <PDFDownloadLink
-                                document={<BookingPDF booking={bookingData} />}
-                                fileName="booking-confirmation.pdf"
-                                style={{ textDecoration: "none" }} // remove default link style
-                                >
-                                {({ loading }) => (
-                                    <Button
-                                    type="primary"
-                                    icon={<DownloadOutlined />}
-                                    loading={loading}
-                                    >
-                                    {loading ? "Generating PDF..." : "Download pdf Document"}
-                                    </Button>
-                                )}
-                            </PDFDownloadLink>,
-                            <Button icon={<BackwardOutlined />} onClick={() => {setBookingData(null)}} variant="filled" color="red">Go Back</Button>,
-                            ]}
-                        />
-                        
-                    )}
+                    </Form>
                     
                 </Col>       
             </Row>
