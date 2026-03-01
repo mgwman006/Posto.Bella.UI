@@ -159,14 +159,25 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Extra Services</Text>
         {booking.extras.length > 0 ? (
-          booking.extras.map((extra, index) => (
-            <View style={styles.row} key={index}>
-              <Text>{extra.name}</Text>
-              <Text>${extra.cost}</Text>
+          <>
+            {/* Table Header */}
+            <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Service Type</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Quantity</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Cost (Tsh)</Text>
             </View>
-          ))
+
+            {/* Table Rows */}
+            {booking.extras.map((service, index) => (
+                <View style={styles.tableRow} key={index}>
+                <Text style={styles.tableCell}>{service.serviceType}</Text>
+                <Text style={styles.tableCell}>{service.quantity}</Text>
+                <Text style={styles.tableCell}>{service.cost}</Text>
+                </View>
+            ))}
+         </>
         ) : (
-          <Text>No extra services selected</Text>
+          <Text>No Extra Services selected</Text>
         )}
       </View>
 

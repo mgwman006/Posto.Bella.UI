@@ -34,7 +34,7 @@ export  interface CreatedBookingDto
 /* ================= TYPES ================= */
 
 export interface ExtraServiceDTO {
-  name: string;
+  serviceType: string;
   cost: number;
   quantity: number
 }
