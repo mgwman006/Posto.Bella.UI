@@ -2,12 +2,10 @@ import { Button, Col, Form, Input, Row, Select, Space, DatePicker, GetProps, Dat
 import { RoomBookingModel } from "../../../models/booking";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
-const { RangePicker } = DatePicker;
 import { BackwardOutlined, CloseOutlined, DownloadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from "dayjs";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BookingPDF from "./RoomBookingPDF";
-import { data } from "react-router";
 
 type RangePickerProps = GetProps<typeof DatePicker.RangePicker>;
 
@@ -16,14 +14,31 @@ interface RoomOption {
   value: string;
   cost: number;
 }
+interface ExtrasOption {
+  label: string;
+  value: string;
+  cost: number;
+}
 const roomsData : RoomOption[]= [
         { label: 'Standard BO - Tsh 70,000', value:"Standard BO", cost: 70000 },
-        { label: 'Standard B&B - Tsh 80,000',value:"Standard BB", cost: 80000 },
+        { label: 'Standard Room WE BO - Tsh 80,000',value:"Standard Room WE BO", cost: 80000 },
         { label: 'Standard Room WE B&B - Ths 110,000', value:"Standard Room WE BB",cost: 110000 },
         { label: 'Jnr Suite BO - Tsh 80,000', value:"Jnr Suite BO",cost: 80000 },
         { label: 'Jnr Suite B&B - Tsh 110,000', value:"Jnr Suite BB",cost: 110000 },
         { label: 'Jnr Suite WE B&B - Tsh 130,000', value:"Jnr Suite WE BB",cost: 130000 },
-        { label: 'Family Suite B&B Tsh 150,000', value:"Family Suite BB",cost: 150000 },
+        { label: 'Family Suite B&B Tsh - 150,000', value:"Family Suite BB",cost: 150000 },
+        { label: 'Family Suite Bed Only - Tsh 130,000', value:"Family Suite Bed Only",cost: 130000 },
+        { label: 'Family Suite BO (Offer) - Tsh 100,000', value:"Family Suite BO (Offer)",cost: 100000 },
+        { label: 'Breakfast for 1-2 Pax - Tsh 30,000', value:"Breakfast for 1-2 Pax",cost: 30000 },
+    ];
+
+const extrasData : ExtrasOption[]= [
+        { label: 'Extra Person Adult - Tsh 60,000', value:"Extra Person Adult", cost: 60000 },
+        { label: 'Extra Person Kid - Tsh 50,000',value:"Extra Person Kid", cost: 50000 },
+        { label: 'Extra Time Jnr Suite - Tsh 40,000', value:"Extra Time Jnr Suite",cost: 40000 },
+        { label: 'Extra Time Standard Room - Tsh 40,000', value:"Extra Time Standard Room",cost: 40000 },
+        { label: 'Extra Bed - Tsh 50,000', value:"Extra Bed",cost: 50000 },
+        { label: 'Extra Time Family Suite - Tsh 80,000', value:"Extra Time Family Suite",cost: 80000 },
     ];
 
 
@@ -33,6 +48,7 @@ export default function RoomBooking()
     const [checkInDateValue,setCheckInDateValue] = useState<dayjs.Dayjs>();
     const [checkOutDateValue,setCheckOutDateValue] = useState<dayjs.Dayjs>();
     const [roomsValue,setRoomsValue] = useState<RoomOption[]>();
+    const [extrasValue,setExtrasValue] = useState<ExtrasOption[]>();
     const [nightsValue,setNightsValue] = useState<number>(0);
     const [totalAmountStateValue,setTotalAmountStateValue] = useState<number>(0);
     const [amountPaidStateValue,setAmountPaidStateValue] = useState<number>(0);
@@ -46,10 +62,15 @@ export default function RoomBooking()
             roomsValue?.forEach((data,index) => {
                 totalCost += data.cost*nightsValue;
             });
+
+            extrasValue?.forEach((data,index) => {
+                totalCost += data.cost*nightsValue;
+            });
+
             setTotalAmountStateValue(totalCost);
             form.setFieldsValue({ totalAmount: totalCost });
         }
-        ,[roomsValue,nightsValue]
+        ,[roomsValue,nightsValue,extrasValue]
     );
 
     useEffect(
@@ -116,7 +137,7 @@ export default function RoomBooking()
         const option = roomsData.find((r) => r.value === (selectedRoomValue || room.roomType));
         const price = option?.cost || 0;
 
-        const quantity = room.quantity || 1;
+        const quantity = room.quantity || 0;
 
         // Update room info
         rooms[index] = {
@@ -127,6 +148,29 @@ export default function RoomBooking()
 
         form.setFieldsValue({ rooms });
         setRoomsValue(rooms);
+    };
+
+    const handleExtrasChange = (index: number, selectedRoomValue?: string) => {
+        const extras = form.getFieldValue("extras") || [];
+        if (!extras[index]) return;
+
+        const extra = extras[index];
+
+        // Find room price from your roomsData
+        const option = extrasData.find((r) => r.value === (selectedRoomValue || extra.serviceType));
+        const price = option?.cost || 0;
+
+        const quantity = extra.quantity || 0;
+
+        // Update room info
+        extras[index] = {
+            ...extra,
+            roomType: option?.value,
+            cost: price * quantity,
+        };
+
+        form.setFieldsValue({ extras });
+        setExtrasValue(extras);
     };
 
 
@@ -145,7 +189,7 @@ export default function RoomBooking()
             checkOutDate: readableCheckOut,
             nights: form.getFieldValue("numberOfNights"),
             rooms: form.getFieldValue("rooms"),
-            extras: [],
+            extras: form.getFieldValue("extras"),
             expectedTimeOfArrival:"",
             paymentDetails:{
                 totalAmount:form.getFieldValue("totalAmount"),
@@ -174,9 +218,9 @@ export default function RoomBooking()
                 <Col 
                     xs={22} 
                     sm={20} 
-                    lg={6} 
-                    xl={6} 
-                    xxl={6}
+                    lg={8} 
+                    xl={8} 
+                    xxl={8}
                 >
                     <Typography.Title level={3}>
                         Room Booking Form
@@ -189,11 +233,11 @@ export default function RoomBooking()
 
             >
                 <Col 
-                    xs={22} 
-                    sm={20} 
-                    lg={6} 
-                    xl={6} 
-                    xxl={6}
+                    xs={24} 
+                    sm={24} 
+                    lg={8} 
+                    xl={8} 
+                    xxl={8}
                     style={{display: 'flex', justifyContent: 'center'}}
                 >
                     {!bookingData && (
@@ -221,7 +265,7 @@ export default function RoomBooking()
                                         format="YYYY-MM-DD HH:mm:ss"
                                         disabledDate={disabledCheckInDate}
                                         showTime={{ defaultOpenValue: dayjs('00:00:00', 'HH:mm:ss') }}
-                                        style={{ width: '100%' }}
+                                        style={{ }}
                                         onOk={handleOnOkCheckInDate}
                                     />
                                 </Form.Item>
@@ -252,7 +296,7 @@ export default function RoomBooking()
                                         format="YYYY-MM-DD HH:mm:ss"
                                         disabledDate={disabledCheckOutDate}
                                         showTime={{ defaultOpenValue: dayjs('00:00:00', 'HH:mm:ss') }}
-                                        style={{ width: '100%' }}
+                                        style={{}}
                                         onOk={handleOnOkCheckOutDate}
                                     />
                                 </Form.Item>
@@ -356,7 +400,7 @@ export default function RoomBooking()
                                 </Form.List>
 
                                 <Form.List 
-                                    name="extraService"
+                                    name="extras"
                                 >
                                     {(fields, { add, remove }, { errors }) => (
                                         <>
@@ -379,13 +423,14 @@ export default function RoomBooking()
                                                     <Form.Item 
                                                         {...restField}
                                                         label="ServiceType"
-                                                        name={[name, 'service']}
+                                                        name={[name, 'serviceType']}
                                                         rules={[{ required: true, message:'Service Type is required' }]}>
                                                         <Select
                                                             allowClear
                                                             placeholder="Select Service Type"
                                                             style={{ width: 300 }}
-                                                            options={roomsData}
+                                                            options={extrasData}
+                                                            onChange={(value) => handleExtrasChange(name, value)}
                                                         />
                                                     </Form.Item>
                                                     <Form.Item
@@ -394,7 +439,7 @@ export default function RoomBooking()
                                                         name={[name, 'quantity']}
                                                         rules={[{ required: true, message: 'Quantity is required' }]}
                                                     >
-                                                        <InputNumber placeholder="Quantity" style={{ width: 300 }} />
+                                                        <InputNumber style={{ width: 300 }} min={1} onChange={() => {handleExtrasChange(name);}}/>
                                                     </Form.Item>
                                                     <Form.Item
                                                         {...restField}
@@ -402,13 +447,13 @@ export default function RoomBooking()
                                                         name={[name, 'cost']}
                                                         rules={[{ required: true, message: 'Missing last name' }]}
                                                     >
-                                                            <InputNumber style={{ width: 300 }} disabled/>
+                                                        <InputNumber min={0} style={{ width: 300 }} disabled/>
                                                     </Form.Item>
                                                 </Flex>
                                             </Card>
                                         ))}
                                         <Form.Item>
-                                            <Button color="blue" variant="solid" onClick={() => add()} block icon={<PlusOutlined />}  disabled>
+                                            <Button color="blue" variant="solid" onClick={() => add()} block icon={<PlusOutlined />}  >
                                                 Add Extra Service
                                             </Button>
                                             <Form.ErrorList errors={errors} />
@@ -426,7 +471,27 @@ export default function RoomBooking()
                                 <Form.Item 
                                     name="amountPaid" 
                                     label="Amount Paid"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        { required: true, message: "Amount paid is required" },
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                            const totalMaountValue = getFieldValue("totalAmount");
+
+                                            if (!value || !totalMaountValue) return Promise.resolve();
+
+                                            if(Number(value)<0)
+                                                return Promise.reject(new Error("Amount can not be negative number"));
+
+                                            if (value <= totalMaountValue) return Promise.resolve();
+                                            
+                                            
+                                            
+                                            return Promise.reject(
+                                                new Error("Customer can not pay more than required amount")
+                                            );
+                                        },
+                                        }),
+                                    ]}
                                 >
                                     <InputNumber onChange={(value) => setAmountPaidStateValue(Number(value??0))} style={{ width: '100%' }} />
                                 </Form.Item>
