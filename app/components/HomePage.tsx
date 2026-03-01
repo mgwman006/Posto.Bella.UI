@@ -39,7 +39,9 @@ export default function HomePage(){
                     <Row>
                       <Col span={24} style={{backgroundColor:"white"}}>
                           <Carousel 
-                            autoplay>
+                            autoplay
+                            arrows
+                          >
                             {/* <div>
                               <Image preview={false} src="/carousel/bluePool.jpeg"/>
                             </div> */}
