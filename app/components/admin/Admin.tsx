@@ -41,14 +41,14 @@ export default function Admin()
                 <Flex align="center" justify="center">
                     <Card 
                         hoverable 
-                        // onClick={() => navigate("/booking/restaurant")}
+                        onClick={() => navigate("/booking/restaurant")}
                         style={{width:"100%"}}
                     >
                         <Result
                             icon={<ShopOutlined  size={10}/>}
                             title="Restaurant Reservation"
                             subTitle="Reserve tables & place orders"
-                            extra={<Button color="green" variant="solid" disabled>Book Now</Button>}
+                            extra={<Button color="green" variant="solid" >Book Now</Button>}
                             style={{width:"100%"}}
                         />
                     </Card>
