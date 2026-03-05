@@ -4,6 +4,7 @@ import HomePage from "./components/HomePage";
 import TourDetails from "./components/TourDetails";
 import Admin from "./components/admin/Admin";
 import RoomBooking from "./components/admin/roombooking/RoomBooking";
+import RestaurantBooking from "./components/admin/restaurantbooking/RestaurantBooking";
 
 const routes = [
   {
@@ -29,7 +30,7 @@ const routes = [
           },
           {
             path:"restaurant",
-            Component:TourDetails
+            Component: RestaurantBooking
           }
         ]
       }

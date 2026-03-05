@@ -58,3 +58,20 @@ export interface RoomBookingModel {
   remarks?: string;
   receptionist:string
 }
+
+export interface RestaurantBookingModel 
+{
+  customerName:string;
+  email: string;
+  phone: string;
+  date:string;
+  eventType:string;
+  arrivalTime:String;
+  eatingTime: String;
+  tableNumber:number;
+  guests:number;
+  meal:string;
+  paymentDetails: PaymentDetails;
+  remarks?: string;
+  receptionist:string
+}
