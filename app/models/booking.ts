@@ -36,21 +36,23 @@ export  interface CreatedBookingDto
 export interface ExtraServiceDTO {
   serviceType: string;
   cost: number;
-  quantity: number
+  quantity: number;
+  checkInDate:Dayjs;
+  checkOutDate:Dayjs;
+  numberOfNights:number
 }
 export interface RoomDTO {
   roomType: string;
   quantity: number;
   cost: number;
+  checkInDate:Dayjs;
+  checkOutDate:Dayjs;
+  numberOfNights:number
 }
 
 export interface RoomBookingModel {
   customerName: string;
   phone: string;
-  checkInDate:string;
-  checkOutDate:string;
-  expectedTimeOfArrival:String;
-  nights: number;
   rooms: RoomDTO[];
   extras: ExtraServiceDTO[];
   paymentDetails: PaymentDetails;

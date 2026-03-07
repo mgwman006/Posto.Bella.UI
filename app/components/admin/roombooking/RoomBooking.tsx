@@ -6,8 +6,10 @@ import { BackwardOutlined, CloseOutlined, DownloadOutlined, MinusCircleOutlined,
 import dayjs, { Dayjs } from "dayjs";
 import { pdf, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import BookingPDF from "./RoomBookingPDF";
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
-type RangePickerProps = GetProps<typeof DatePicker.RangePicker>;
+dayjs.extend(isSameOrBefore);
+
 const timeFormat = 'HH:mm';
 
 interface RoomOption {
@@ -45,11 +47,8 @@ const extrasData : ExtrasOption[]= [
 
 export default function RoomBooking()
 {
-    const [loading,setLoading] = useState<boolean>(false);
-    const [bookingData, setBookingData] = useState<RoomBookingModel>();
     const [roomsValue,setRoomsValue] = useState<RoomOption[]>();
     const [extrasValue,setExtrasValue] = useState<ExtrasOption[]>();
-    const [nightsValue,setNightsValue] = useState<number>(0);
     const [totalAmountStateValue,setTotalAmountStateValue] = useState<number>(0);
     const [amountPaidStateValue,setAmountPaidStateValue] = useState<number>(0);
     const [form] = Form.useForm();
@@ -60,17 +59,17 @@ export default function RoomBooking()
         {
             let totalCost:number = 0;
             roomsValue?.forEach((data,index) => {
-                totalCost += data.cost*nightsValue;
+                totalCost += data.cost;
             });
 
             extrasValue?.forEach((data,index) => {
-                totalCost += data.cost*nightsValue;
+                totalCost += data.cost;
             });
 
             setTotalAmountStateValue(totalCost);
             form.setFieldsValue({ totalAmount: totalCost });
         }
-        ,[roomsValue,nightsValue,extrasValue]
+        ,[roomsValue,extrasValue]
     );
 
     useEffect(
@@ -82,41 +81,7 @@ export default function RoomBooking()
         ,[totalAmountStateValue,amountPaidStateValue]
     );
 
-
-    const disabledCheckInDate: RangePickerProps['disabledDate'] = (current) => {
-        // Can not select days before today
-        return current && current < dayjs().startOf('day');
-    };
-
-    const disabledCheckOutDate = (current: dayjs.Dayjs) => {
-        const checkIn = form.getFieldValue("checkInDate");
-
-        if (!checkIn) return false;
-
-        return current.isBefore(dayjs(checkIn).add(1, "day"), "day");
-    };
-
-    const handleOnOkCheckInDate = (checkInDate: dayjs.Dayjs) => {
-        if (!checkInDate) return;
-
-        let checkOutDateValue: Dayjs = form.getFieldValue("checkOutDate");
-        if(!checkOutDateValue) return;
-
-        const nights = checkOutDateValue.diff(checkInDate, "day") || 0;
-        form.setFieldsValue({ numberOfNights: nights });
-        setNightsValue(nights);
-    };
-
-    const handleOnOkCheckOutDate = (date: dayjs.Dayjs) => {
-        if (!date) return;
-
-        let checkInDateValue: Dayjs = form.getFieldValue("checkInDate");
-        if(!checkInDateValue) return;
-
-        const nights = date.diff(checkInDateValue, "day") || 0;
-        form.setFieldsValue({ numberOfNights: nights });
-        setNightsValue(nights);
-    };
+ 
 
 
     const handleRoomChange = (index: number, selectedRoomValue?: string) => {
@@ -128,14 +93,23 @@ export default function RoomBooking()
         // Find room price from your roomsData
         const option = roomsData.find((r) => r.value === (selectedRoomValue || room.roomType));
         const price = option?.cost || 0;
-
         const quantity = room.quantity || 0;
+
+        const checkIn = room.checkInDate;
+        const checkOut = room.checkOutDate;
+
+         let numberOfNights = 0;
+
+        if (checkIn && checkOut) {
+            numberOfNights = dayjs(checkOut).diff(dayjs(checkIn), "day");
+        }
 
         // Update room info
         rooms[index] = {
             ...room,
             roomType: option?.value,
-            cost: price * quantity,
+            cost: price * quantity * numberOfNights,
+            numberOfNights
         };
 
         form.setFieldsValue({ rooms });
@@ -151,14 +125,23 @@ export default function RoomBooking()
         // Find room price from your roomsData
         const option = extrasData.find((r) => r.value === (selectedRoomValue || extra.serviceType));
         const price = option?.cost || 0;
-
         const quantity = extra.quantity || 0;
+
+        const checkIn = extra.checkInDate;
+        const checkOut = extra.checkOutDate;
+
+         let numberOfNights = 0;
+
+        if (checkIn && checkOut) {
+            numberOfNights = dayjs(checkOut).diff(dayjs(checkIn), "day");
+        }
 
         // Update room info
         extras[index] = {
             ...extra,
             roomType: option?.value,
-            cost: price * quantity,
+            cost: price * quantity * numberOfNights,
+            numberOfNights
         };
 
         form.setFieldsValue({ extras });
@@ -167,21 +150,15 @@ export default function RoomBooking()
 
 
     const onFinish = async (values: any) => {
-        setLoading(true);
-        let inDate: Dayjs = form.getFieldValue("checkInDate");
-        let outDate: Dayjs = form.getFieldValue("checkOutDate");
-        const readableCheckIn = inDate.format("MMMM D, YYYY"); // February 28, 2026 3:30 PM
-        const readableCheckOut = outDate.format("MMMM D, YYYY"); // March 3, 2026 11:00 AM
+       
+       // const readableCheckIn = inDate.format("MMMM D, YYYY"); // February 28, 2026 3:30 PM
+     //   const readableCheckOut = outDate.format("MMMM D, YYYY"); // March 3, 2026 11:00 AM
 
-        const booking: RoomBookingModel = {
+        const bookingData: RoomBookingModel = {
             customerName: form.getFieldValue("guestName"),
             phone: form.getFieldValue("phoneNumber"),
-            checkInDate: readableCheckIn,
-            checkOutDate: readableCheckOut,
-            nights: form.getFieldValue("numberOfNights"),
             rooms: form.getFieldValue("rooms"),
             extras: form.getFieldValue("extras"),
-            expectedTimeOfArrival:"",
             paymentDetails:{
                 totalAmount:form.getFieldValue("totalAmount"),
                 amountPaid:form.getFieldValue("amountPaid"),
@@ -193,14 +170,11 @@ export default function RoomBooking()
             expectedArrivalTime:form.getFieldValue("expectedTime").format("HH:mm")
       
         };
+        
 
-        setBookingData(booking);
-
-       // import { pdf } from "@react-pdf/renderer";
-        if(booking)
+        if(bookingData)
         {
-            setLoading(false);
-            const blob = await pdf(<BookingPDF booking={booking} />).toBlob();
+            const blob = await pdf(<BookingPDF booking={bookingData} />).toBlob();
             const url = URL.createObjectURL(blob);
             window.open(url);
         }
@@ -258,72 +232,9 @@ export default function RoomBooking()
                                 <Form.Item name="guestName" label="Guest/Company Name" rules={[{ required: true }]}>
                                     <Input style={{ width: 'fillparent' }}/>
                                 </Form.Item>
+
                                 <Form.Item name="phoneNumber" label="WhatsApp Number" rules={[{ required: true }]}>
                                     <Input />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Check-In Date"
-                                    name="checkInDate"
-                                    rules={[{ required: true }]}
-                                >
-                                    <DatePicker
-                                        disabledDate={disabledCheckInDate}
-                                        onChange={(date) => handleOnOkCheckInDate(date)}
-                                    />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Check-Out Date"
-                                    name="checkOutDate"
-                                    rules={[
-                                        { required: true, message: "Please select check-out date" },
-                                        ({ getFieldValue }) => ({
-                                            validator(_, value) {
-                                            const checkIn = getFieldValue("checkInDate");
-
-                                            if (!value || !checkIn) return Promise.resolve();
-
-                                            if (value.isAfter(dayjs(checkIn), "day")) 
-                                            {
-                                                return Promise.resolve();
-                                            }
-
-                                            return Promise.reject(
-                                                new Error("Check-out must be at least 1 day after check-in")
-                                            );
-                                        },
-                                        }),
-                                    ]}
-                                >
-                                    <DatePicker
-                                        disabledDate={disabledCheckOutDate}
-                                        onChange={(date) => handleOnOkCheckOutDate(date)}
-                                    />
-                                </Form.Item>
-                                <Form.Item 
-                                    name="numberOfNights" 
-                                    label="Number of Nights"
-                                    rules={[
-                                        { required: true, message: "Number of Nights must be valid" },
-                                        ({ getFieldValue }) => ({
-                                            validator(_, value) {
-                                            const numberOfNights = getFieldValue("numberOfNights");
-
-                                            if (!value || !numberOfNights) return Promise.resolve();
-
-                                            if (numberOfNights>0) 
-                                            {
-                                                return Promise.resolve();
-                                            }
-
-                                            return Promise.reject(
-                                                new Error("Number of nights must be greater than 0")
-                                            );
-                                        },
-                                        }),
-                                    ]}
-
-                                >
-                                    <InputNumber min={1} style={{ width: '100%' }} disabled/>
                                 </Form.Item>
 
                                 <Form.Item
@@ -351,7 +262,7 @@ export default function RoomBooking()
                                         {fields.map(({ key, name, ...restField }) => (
                                             
                                             <Card
-                                                style={{ width: '100%' }}
+                                                style={{ width: '100%',backgroundColor:'#F2F2F2',marginBottom: 10  }}
                                                 size="small"
                                                 title={`Room ${name + 1}`}
                                                 key={key}
@@ -363,8 +274,9 @@ export default function RoomBooking()
                                                 />
                                                 }
                                             >
-                                                <Flex key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline" vertical>
+                                                <Flex key={key} style={{ display: 'flex'}} align="baseline" vertical>
                                                     <Form.Item 
+                                                        style={{width:'100%'}}
                                                         {...restField}
                                                         label="RoomType"
                                                         name={[name, 'roomType']}
@@ -372,26 +284,108 @@ export default function RoomBooking()
                                                         <Select
                                                             allowClear
                                                             placeholder="Select Room Type"
-                                                            style={{ width: 300 }}
+                                                            style={{ width: '100%'}}
                                                             options={roomsData}
                                                             onChange={(value) => handleRoomChange(name, value)}
                                                         />
                                                     </Form.Item>
                                                     <Form.Item
+                                                        style={{width:'100%'}}
+                                                        {...restField}
+                                                        label="Check-In Date"
+                                                        name={[name,'checkInDate']}
+                                                        rules={[{ required: true }]}
+                                                    >
+                                                        <DatePicker
+                                                            style={{width:'100%'}}
+                                                            disabledDate={(currentDate) => {
+                                                                    // Disable all dates before today
+                                                                    return currentDate && currentDate.isBefore(dayjs(), 'day');
+                                                                }}
+                                                            onChange={() => {handleRoomChange(name);}}
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                       style={{width:'100%'}}
+                                                       {...restField}
+                                                        label="Check-Out Date"
+                                                        name={[name,'checkOutDate']}
+                                                        rules={[
+                                                            { required: true, message: "Please select check-out date" },
+                                                            ({ getFieldValue }) => ({
+                                                                validator(_, value) {
+                                                                const checkIn = getFieldValue(['rooms', name, 'checkInDate']);
+
+                                                                if (!value || !checkIn) return Promise.resolve();
+
+                                                                if (value.isAfter(dayjs(checkIn), "day")) 
+                                                                {
+                                                                    return Promise.resolve();
+                                                                }
+
+                                                                return Promise.reject(
+                                                                    new Error("Check-out must be at least 1 day after check-in")
+                                                                );
+                                                            },
+                                                            }),
+                                                        ]}
+                                                    >
+                                                        <DatePicker
+                                                            disabledDate={(currentDate) => {
+                                                                    const checkIn = form.getFieldValue(['rooms', name, 'checkInDate']);
+                                                                    // Disable all dates before or equal to checkIn
+                                                                    return checkIn ? currentDate.isSameOrBefore(dayjs(checkIn), 'day') : false;
+                                                                }}
+                                                            style={{width:'100%'}}
+                                                            onChange={() => {handleRoomChange(name);}}
+                                                            
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item 
+                                                        style={{width:'100%'}}
+                                                        {...restField}
+                                                        name={[name,'numberOfNights']}
+                                                        label="Number of Nights"
+                                                        rules={[
+                                                            { required: true, message: "Number of Nights must be valid" },
+                                                            ({ getFieldValue }) => ({
+                                                                validator(_, value) {
+                                                                const numberOfNights = getFieldValue("numberOfNights");
+
+                                                                if (!value || !numberOfNights) return Promise.resolve();
+
+                                                                if (numberOfNights>0) 
+                                                                {
+                                                                    return Promise.resolve();
+                                                                }
+
+                                                                return Promise.reject(
+                                                                    new Error("Number of nights must be greater than 0")
+                                                                );
+                                                            },
+                                                            }),
+                                                        ]}
+
+                                                    >
+                                                        <InputNumber min={1} style={{ width: '100%' }} disabled/>
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        style={{ width: '100%' }}
                                                         {...restField}
                                                         label="Quantity"
                                                         name={[name, 'quantity']}
                                                         rules={[{ required: true, message: 'Quantity is required' }]}
                                                     >
-                                                        <InputNumber min={1} onChange={() => {handleRoomChange(name);}} style={{ width: 300 }} />
+                                                        <InputNumber min={1} onChange={() => {handleRoomChange(name);}} style={{ width: '100%' }} />
                                                     </Form.Item>
                                                     <Form.Item
+                                                        style={{ width: '100%' }}
                                                         {...restField}
                                                         label="Cost"
                                                         name={[name, 'cost']}
                                                         rules={[{ required: true }]}
                                                     >
-                                                        <InputNumber style={{ width: 300 }} min={0}  disabled/>
+                                                        <InputNumber style={{ width: '100%' }} min={0}  disabled/>
                                                     </Form.Item>
                                                 </Flex>
                                             </Card>
@@ -414,7 +408,7 @@ export default function RoomBooking()
                                         {fields.map(({ key, name, ...restField }) => (
                                             
                                             <Card
-                                                style={{ width: 350 }}
+                                                style={{ width: '100%',backgroundColor:'#F2F2F2',marginBottom: 10  }}
                                                 size="small"
                                                 title={`Service ${name + 1}`}
                                                 key={key}
@@ -428,6 +422,7 @@ export default function RoomBooking()
                                             >
                                                 <Flex key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline" vertical>
                                                     <Form.Item 
+                                                        style={{ width: '100%' }}
                                                         {...restField}
                                                         label="ServiceType"
                                                         name={[name, 'serviceType']}
@@ -435,26 +430,108 @@ export default function RoomBooking()
                                                         <Select
                                                             allowClear
                                                             placeholder="Select Service Type"
-                                                            style={{ width: 300 }}
+                                                            style={{ width: '100%' }}
                                                             options={extrasData}
                                                             onChange={(value) => handleExtrasChange(name, value)}
                                                         />
                                                     </Form.Item>
                                                     <Form.Item
+                                                        style={{width:'100%'}}
+                                                        {...restField}
+                                                        label="Check-In Date"
+                                                        name={[name,'checkInDate']}
+                                                        rules={[{ required: true }]}
+                                                    >
+                                                        <DatePicker
+                                                            style={{width:'100%'}}
+                                                            disabledDate={(currentDate) => {
+                                                                    // Disable all dates before today
+                                                                    return currentDate && currentDate.isBefore(dayjs(), 'day');
+                                                                }}
+                                                            onChange={() => {handleExtrasChange(name);}}
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                       style={{width:'100%'}}
+                                                       {...restField}
+                                                        label="Check-Out Date"
+                                                        name={[name,'checkOutDate']}
+                                                        rules={[
+                                                            { required: true, message: "Please select check-out date" },
+                                                            ({ getFieldValue }) => ({
+                                                                validator(_, value) {
+                                                                const checkIn = getFieldValue(['rooms', name, 'checkInDate']);
+
+                                                                if (!value || !checkIn) return Promise.resolve();
+
+                                                                if (value.isAfter(dayjs(checkIn), "day")) 
+                                                                {
+                                                                    return Promise.resolve();
+                                                                }
+
+                                                                return Promise.reject(
+                                                                    new Error("Check-out must be at least 1 day after check-in")
+                                                                );
+                                                            },
+                                                            }),
+                                                        ]}
+                                                    >
+                                                        <DatePicker
+                                                            disabledDate={(currentDate) => {
+                                                                    const checkIn = form.getFieldValue(['extras', name, 'checkInDate']);
+                                                                    // Disable all dates before or equal to checkIn
+                                                                    return checkIn ? currentDate.isSameOrBefore(dayjs(checkIn), 'day') : false;
+                                                                }}
+                                                            style={{width:'100%'}}
+                                                            onChange={() => {handleExtrasChange(name);}}
+                                                            
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item 
+                                                        style={{width:'100%'}}
+                                                        {...restField}
+                                                        name={[name,'numberOfNights']}
+                                                        label="Number of Nights"
+                                                        rules={[
+                                                            { required: true, message: "Number of Nights must be valid" },
+                                                            ({ getFieldValue }) => ({
+                                                                validator(_, value) {
+                                                                const numberOfNights = getFieldValue("numberOfNights");
+
+                                                                if (!value || !numberOfNights) return Promise.resolve();
+
+                                                                if (numberOfNights>0) 
+                                                                {
+                                                                    return Promise.resolve();
+                                                                }
+
+                                                                return Promise.reject(
+                                                                    new Error("Number of nights must be greater than 0")
+                                                                );
+                                                            },
+                                                            }),
+                                                        ]}
+
+                                                    >
+                                                        <InputNumber min={1} style={{ width: '100%' }} disabled/>
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        style={{ width: '100%' }}
                                                         {...restField}
                                                         label="Quantity"
                                                         name={[name, 'quantity']}
                                                         rules={[{ required: true, message: 'Quantity is required' }]}
                                                     >
-                                                        <InputNumber style={{ width: 300 }} min={1} onChange={() => {handleExtrasChange(name);}}/>
+                                                        <InputNumber style={{ width: '100%' }} min={1} onChange={() => {handleExtrasChange(name);}}/>
                                                     </Form.Item>
                                                     <Form.Item
+                                                        style={{ width: '100%' }}
                                                         {...restField}
                                                         label="Cost"
                                                         name={[name, 'cost']}
                                                         rules={[{ required: true, message: 'Missing last name' }]}
                                                     >
-                                                        <InputNumber min={0} style={{ width: 300 }} disabled/>
+                                                        <InputNumber min={0} style={{ width: '100%' }} disabled/>
                                                     </Form.Item>
                                                 </Flex>
                                             </Card>

@@ -106,6 +106,7 @@ interface BookingPDFProps {
 }
 
 const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
+  
   <Document>
     <Page size="A4" style={styles.page}>
        {/* Logo */}
@@ -129,26 +130,6 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
         </View>
       </View>
 
-      {/* Booking Dates */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Booking Dates</Text>
-        <View style={styles.row}>
-          <Text style={styles.label}>Check-in:</Text>
-          <Text>{booking.checkInDate}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Check-out:</Text>
-          <Text>{booking.checkOutDate}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Numbe of Nights:</Text>
-          <Text>{booking.nights}</Text>
-        </View>
-         <View style={styles.row}>
-          <Text style={styles.label}>Time of Arrival:</Text>
-          <Text>{booking.expectedArrivalTime}</Text>
-        </View>
-      </View>
 
       {/* Room Details */}
       <View style={styles.section}>
@@ -159,7 +140,10 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
             <View style={styles.tableRow}>
                 <Text style={[styles.tableCell, styles.tableHeader]}>Room Type</Text>
                 <Text style={[styles.tableCell, styles.tableHeader]}>Quantity</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Nights</Text>
                 <Text style={[styles.tableCell, styles.tableHeader]}>Cost (Tsh)</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Check In</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Check Out</Text>
             </View>
 
             {/* Table Rows */}
@@ -167,7 +151,10 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
                 <View style={styles.tableRow} key={index}>
                 <Text style={styles.tableCell}>{room.roomType}</Text>
                 <Text style={styles.tableCell}>{room.quantity}</Text>
+                <Text style={styles.tableCell}>{room.numberOfNights}</Text>
                 <Text style={styles.tableCell}>{room.cost}</Text>
+                <Text style={styles.tableCell}>{room.checkInDate.format("MMMM D, YYYY")}</Text>
+                <Text style={styles.tableCell}>{room.checkOutDate.format("MMMM D, YYYY")}</Text>
                 </View>
             ))}
          </>
@@ -185,7 +172,10 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
             <View style={styles.tableRow}>
                 <Text style={[styles.tableCell, styles.tableHeader]}>Service Type</Text>
                 <Text style={[styles.tableCell, styles.tableHeader]}>Quantity</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Nights</Text>
                 <Text style={[styles.tableCell, styles.tableHeader]}>Cost (Tsh)</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Check In</Text>
+                <Text style={[styles.tableCell, styles.tableHeader]}>Check Out</Text>
             </View>
 
             {/* Table Rows */}
@@ -193,7 +183,10 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
                 <View style={styles.tableRow} key={index}>
                 <Text style={styles.tableCell}>{service.serviceType}</Text>
                 <Text style={styles.tableCell}>{service.quantity}</Text>
+                <Text style={styles.tableCell}>{service.numberOfNights}</Text>
                 <Text style={styles.tableCell}>{service.cost}</Text>
+                <Text style={styles.tableCell}>{service.checkInDate.format("MMMM D, YYYY")}</Text>
+                <Text style={styles.tableCell}>{service.checkOutDate.format("MMMM D, YYYY")}</Text>
                 </View>
             ))}
          </>
