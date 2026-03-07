@@ -46,7 +46,6 @@ export interface RoomDTO {
 
 export interface RoomBookingModel {
   customerName: string;
-  email: string;
   phone: string;
   checkInDate:string;
   checkOutDate:string;
@@ -56,7 +55,8 @@ export interface RoomBookingModel {
   extras: ExtraServiceDTO[];
   paymentDetails: PaymentDetails;
   remarks?: string;
-  receptionist:string
+  receptionist:string,
+  expectedArrivalTime:string
 }
 
 export interface RestaurantBookingModel 

@@ -122,10 +122,7 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
           <Text style={styles.label}>Full Name:</Text>
           <Text>{booking.customerName}</Text>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Email:</Text>
-          <Text>{booking.email}</Text>
-        </View>
+       
         <View style={styles.row}>
           <Text style={styles.label}>Phone:</Text>
           <Text>{booking.phone}</Text>
@@ -144,8 +141,12 @@ const BookingPDF: React.FC<BookingPDFProps> = ({ booking }) => (
           <Text>{booking.checkOutDate}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.label}>Total Nights:</Text>
+          <Text style={styles.label}>Numbe of Nights:</Text>
           <Text>{booking.nights}</Text>
+        </View>
+         <View style={styles.row}>
+          <Text style={styles.label}>Time of Arrival:</Text>
+          <Text>{booking.expectedArrivalTime}</Text>
         </View>
       </View>
 
