@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Row, Select, Space, DatePicker, GetProps, DatePickerProps, InputNumber, Radio, Card, Flex, Result, Typography, Modal } from "antd";
+import { Button, Col, Form, Input, Row, Select, Space, DatePicker, GetProps, DatePickerProps, InputNumber, Radio, Card, Flex, Result, Typography, Modal, TimePicker } from "antd";
 import { RoomBookingModel } from "../../../models/booking";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
@@ -8,6 +8,7 @@ import { pdf, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import BookingPDF from "./RoomBookingPDF";
 
 type RangePickerProps = GetProps<typeof DatePicker.RangePicker>;
+const timeFormat = 'HH:mm';
 
 interface RoomOption {
   label: string;
@@ -46,8 +47,6 @@ export default function RoomBooking()
 {
     const [loading,setLoading] = useState<boolean>(false);
     const [bookingData, setBookingData] = useState<RoomBookingModel>();
-    const [checkInDateValue,setCheckInDateValue] = useState<dayjs.Dayjs>();
-    const [checkOutDateValue,setCheckOutDateValue] = useState<dayjs.Dayjs>();
     const [roomsValue,setRoomsValue] = useState<RoomOption[]>();
     const [extrasValue,setExtrasValue] = useState<ExtrasOption[]>();
     const [nightsValue,setNightsValue] = useState<number>(0);
@@ -97,32 +96,24 @@ export default function RoomBooking()
         return current.isBefore(dayjs(checkIn).add(1, "day"), "day");
     };
 
-    const handleOnOkCheckInDate = (date: dayjs.Dayjs) => {
-        if (!date) return;
+    const handleOnOkCheckInDate = (checkInDate: dayjs.Dayjs) => {
+        if (!checkInDate) return;
 
-        setCheckInDateValue(date);
-        let nights:number =0;
+        let checkOutDateValue: Dayjs = form.getFieldValue("checkOutDate");
+        if(!checkOutDateValue) return;
 
-        if(checkOutDateValue)
-            nights = checkOutDateValue.diff(date, "day") || 0;
-
+        const nights = checkOutDateValue.diff(checkInDate, "day") || 0;
         form.setFieldsValue({ numberOfNights: nights });
         setNightsValue(nights);
     };
 
     const handleOnOkCheckOutDate = (date: dayjs.Dayjs) => {
         if (!date) return;
-        setCheckOutDateValue(date);
 
+        let checkInDateValue: Dayjs = form.getFieldValue("checkInDate");
         if(!checkInDateValue) return;
 
-        // Strip time, only use year/month/day
-        const checkInDateOnly = checkInDateValue.startOf("day");
-        const checkOutDateOnly = date.startOf("day");
-
-        // Difference in days (integer)
-        const nights = Math.max(0, checkOutDateOnly.diff(checkInDateOnly, "day"));
-
+        const nights = date.diff(checkInDateValue, "day") || 0;
         form.setFieldsValue({ numberOfNights: nights });
         setNightsValue(nights);
     };
@@ -179,12 +170,11 @@ export default function RoomBooking()
         setLoading(true);
         let inDate: Dayjs = form.getFieldValue("checkInDate");
         let outDate: Dayjs = form.getFieldValue("checkOutDate");
-        const readableCheckIn = inDate.format("MMMM D, YYYY h:mm A"); // February 28, 2026 3:30 PM
-        const readableCheckOut = outDate.format("MMMM D, YYYY h:mm A"); // March 3, 2026 11:00 AM
+        const readableCheckIn = inDate.format("MMMM D, YYYY"); // February 28, 2026 3:30 PM
+        const readableCheckOut = outDate.format("MMMM D, YYYY"); // March 3, 2026 11:00 AM
 
         const booking: RoomBookingModel = {
             customerName: form.getFieldValue("guestName"),
-            email: "",
             phone: form.getFieldValue("phoneNumber"),
             checkInDate: readableCheckIn,
             checkOutDate: readableCheckOut,
@@ -199,7 +189,8 @@ export default function RoomBooking()
                 paymentMethod:form.getFieldValue("paymentMethod")
             },
             receptionist:form.getFieldValue("receptionist"),
-            remarks:form.getFieldValue("remarks")
+            remarks:form.getFieldValue("remarks"),
+            expectedArrivalTime:form.getFieldValue("expectedTime").format("HH:mm")
       
         };
 
@@ -276,11 +267,8 @@ export default function RoomBooking()
                                     rules={[{ required: true }]}
                                 >
                                     <DatePicker
-                                        format="YYYY-MM-DD HH:mm:ss"
                                         disabledDate={disabledCheckInDate}
-                                        showTime={{ defaultOpenValue: dayjs('00:00:00', 'HH:mm:ss') }}
-                                        style={{ }}
-                                        onOk={handleOnOkCheckInDate}
+                                        onChange={(date) => handleOnOkCheckInDate(date)}
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -307,11 +295,8 @@ export default function RoomBooking()
                                     ]}
                                 >
                                     <DatePicker
-                                        format="YYYY-MM-DD HH:mm:ss"
                                         disabledDate={disabledCheckOutDate}
-                                        showTime={{ defaultOpenValue: dayjs('00:00:00', 'HH:mm:ss') }}
-                                        style={{}}
-                                        onOk={handleOnOkCheckOutDate}
+                                        onChange={(date) => handleOnOkCheckOutDate(date)}
                                     />
                                 </Form.Item>
                                 <Form.Item 
@@ -341,6 +326,14 @@ export default function RoomBooking()
                                     <InputNumber min={1} style={{ width: '100%' }} disabled/>
                                 </Form.Item>
 
+                                <Form.Item
+                                    label="Expected Time Of Arrival"
+                                    name="expectedTime"
+                                    rules={[{ required: true }]}
+                                >
+                                    <TimePicker  format={timeFormat} />
+                                </Form.Item>
+
                                 <Form.List 
                                     name="rooms"
                                     rules={[
@@ -358,7 +351,7 @@ export default function RoomBooking()
                                         {fields.map(({ key, name, ...restField }) => (
                                             
                                             <Card
-                                                style={{ width: 350 }}
+                                                style={{ width: '100%' }}
                                                 size="small"
                                                 title={`Room ${name + 1}`}
                                                 key={key}
