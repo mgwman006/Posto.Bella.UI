@@ -593,7 +593,7 @@ export default function RoomBooking()
                                 >
                                     <Radio.Group>
                                         <Radio value="Cash"> Cash </Radio>
-                                        <Radio value="Mobile Mobey"> Mobile Mobey </Radio>
+                                        <Radio value="Mobile Mobey"> Mobile Money </Radio>
                                         <Radio value="Bank Tranfer"> Bank Tranfer </Radio>
                                     </Radio.Group>
                                 </Form.Item>
