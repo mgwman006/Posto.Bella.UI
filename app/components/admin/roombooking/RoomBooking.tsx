@@ -42,6 +42,7 @@ const extrasData : ExtrasOption[]= [
         { label: 'Extra Time Standard Room - Tsh 40,000', value:"Extra Time Standard Room",cost: 40000 },
         { label: 'Extra Bed - Tsh 50,000', value:"Extra Bed",cost: 50000 },
         { label: 'Extra Time Family Suite - Tsh 80,000', value:"Extra Time Family Suite",cost: 80000 },
+        { label: 'Jnr Suite Extra Bed- Tsh 40,000', value:"Jnr Suite Extra Bed",cost: 40000 },
     ];
 
 
@@ -593,7 +594,7 @@ export default function RoomBooking()
                                 >
                                     <Radio.Group>
                                         <Radio value="Cash"> Cash </Radio>
-                                        <Radio value="Mobile Mobey"> Mobile Money </Radio>
+                                        <Radio value="Mobile Money"> Mobile Money </Radio>
                                         <Radio value="Bank Tranfer"> Bank Tranfer </Radio>
                                     </Radio.Group>
                                 </Form.Item>
