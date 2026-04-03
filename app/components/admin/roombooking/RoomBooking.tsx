@@ -33,6 +33,8 @@ const roomsData : RoomOption[]= [
         { label: 'Family Suite Bed Only - Tsh 130,000', value:"Family Suite Bed Only",cost: 130000 },
         { label: 'Family Suite BO (Offer) - Tsh 100,000', value:"Family Suite BO (Offer)",cost: 100000 },
         { label: 'Breakfast for 1-2 Pax - Tsh 30,000', value:"Breakfast for 1-2 Pax",cost: 30000 },
+        { label: 'Twin room BO - 140,000', value:"Twin room BO",cost: 140000 },
+        { label: 'Twin room B&B - 170,000', value:"Twin room BB",cost: 170000 },
     ];
 
 const extrasData : ExtrasOption[]= [
@@ -386,7 +388,7 @@ export default function RoomBooking()
                                                         name={[name, 'cost']}
                                                         rules={[{ required: true }]}
                                                     >
-                                                        <InputNumber style={{ width: '100%' }} min={0}  disabled/>
+                                                        <InputNumber style={{ width: '100%' }} min={0}  />
                                                     </Form.Item>
                                                 </Flex>
                                             </Card>
@@ -532,7 +534,7 @@ export default function RoomBooking()
                                                         name={[name, 'cost']}
                                                         rules={[{ required: true, message: 'Missing last name' }]}
                                                     >
-                                                        <InputNumber min={0} style={{ width: '100%' }} disabled/>
+                                                        <InputNumber min={0} style={{ width: '100%' }} />
                                                     </Form.Item>
                                                 </Flex>
                                             </Card>
@@ -551,7 +553,7 @@ export default function RoomBooking()
                                     name="totalAmount" 
                                     label="Total Amount"
                                 >
-                                    <InputNumber style={{ width: '100%' }} disabled/>
+                                    <InputNumber style={{ width: '100%' }} />
                                 </Form.Item>
                                 <Form.Item 
                                     name="amountPaid" 
