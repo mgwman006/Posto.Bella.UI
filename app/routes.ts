@@ -1,10 +1,9 @@
-import ToursPage from "./components/ToursPage";
 import Home from "./components/Home";
 import HomePage from "./components/HomePage";
-import TourDetails from "./components/TourDetails";
 import Admin from "./components/admin/Admin";
 import RoomBooking from "./components/admin/roombooking/RoomBooking";
 import RestaurantBooking from "./components/admin/restaurantbooking/RestaurantBooking";
+import BookingPage from "./components/admin/BookingPage";
 
 const routes = [
   {
@@ -22,7 +21,7 @@ const routes = [
       },
       {
         path:"booking",
-        Component: ToursPage,
+        Component: BookingPage,
         children:[
           {
             path:"room",

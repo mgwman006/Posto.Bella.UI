@@ -1,5 +1,4 @@
 import { Dayjs } from "dayjs";
-import { Room } from "./enums";
 import { PaymentDetails } from "./payment";
 export  interface BookingCreateDto
 {

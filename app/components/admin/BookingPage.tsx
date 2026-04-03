@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-export default function ToursPage() {
+export default function BookingPage() {
   
   return (
     <div>
