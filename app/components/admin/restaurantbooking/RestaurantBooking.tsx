@@ -305,20 +305,20 @@ export default function RestaurantBooking()
                                         { required: true, message: "Amount paid is required" },
                                         ({ getFieldValue }) => ({
                                             validator(_, value) {
-                                            const totalMaountValue = getFieldValue("totalAmount");
+                                             const totalAMaountValue = getFieldValue("totalAmount");
 
-                                            if (!value || !totalMaountValue) return Promise.resolve();
+                                            if (value === undefined || totalAMaountValue===null)
+                                            {
+                                                return Promise.resolve();       
+                                            } 
 
                                             if(Number(value)<0)
+                                            {
                                                 return Promise.reject(new Error("Amount can not be negative number"));
 
-                                            if (value <= totalMaountValue) return Promise.resolve();
-                                            
-                                            
-                                            
-                                            return Promise.reject(
-                                                new Error("Customer can not pay more than required amount")
-                                            );
+                                            }
+
+                                            return Promise.resolve();
                                         },
                                         }),
                                     ]}
