@@ -2,7 +2,6 @@ import { Col, Flex, Progress, Row, Steps, Typography, Image, Button, Carousel, S
 import { EditOutlined, EnvironmentOutlined, FileAddOutlined, HeatMapOutlined, LoadingOutlined, NodeExpandOutlined, RightOutlined } from "@ant-design/icons";
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
-import { getDestinations, getLivePrivateTours } from "../services/admin/privateTourService";
 import { useNavigate } from "react-router-dom";
 import Meta from "antd/es/card/Meta";
 
